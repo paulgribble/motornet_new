@@ -1,0 +1,101 @@
+
+import numpy as np
+import torch as th
+import motornet as mn
+from tqdm import tqdm
+
+from my_env import MyEnvironment
+from my_task import MyTask
+from my_policy import create_policy
+from my_utils import run_episode
+from my_loss import calculate_loss
+from my_plots import plot_handpaths
+
+print('All packages imported.')
+print('pytorch version: ' + th.__version__)
+print('numpy version: ' + np.__version__)
+print('motornet version: ' + mn.__version__)
+
+device = th.device("cpu")
+
+dt     = 0.01 # time step in seconds
+ep_dur = 1.00 # episode duration in seconds
+
+mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
+ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
+
+# initialize the environment
+env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
+                     proprioception_delay=0.01, vision_delay=0.07,
+                     proprioception_noise=1e-3, vision_noise=1e-3, action_noise=1e-4)
+obs, info = env.reset()
+n_t = int(ep_dur / env.effector.dt)
+
+# initialize the task
+task = MyTask(effector=env.effector)
+inputs, targets, init_states = task.generate(1, n_t)
+
+# simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
+sim_mode = "train"
+
+n_batches  = 1000
+batch_size = 32
+results = {}
+
+input_freeze  = 0      # don't freeze input weights
+output_freeze = 0      # don't freeze output weights
+optimizer_mod = 'Adam' # use the Adam optimizer
+learning_rate = 1e-3   # set learning rate
+
+policy, optimizer = create_policy(env, inputs, device, 
+                                  policy_func   = mn.policy.ModularPolicyGRU, 
+                                  optimizer_mod = optimizer_mod, 
+                                  learning_rate = learning_rate)
+
+total_losses     = []
+cartesian_losses = []
+muscle_losses    = []
+spectral_losses  = []
+jerk_losses      = []
+endpoint_dev     = []
+lateral_dev      = []
+
+task.run_mode = 'train' # random reaches
+
+n_t = int(ep_dur / env.effector.dt) + 1 # number of time points
+
+# training loop over batches
+for batch in tqdm(iterable = range(n_batches),
+                  unit          = "batch",
+                  total         = n_batches,
+                  mininterval   = 1.0,
+                  desc          = f"training {n_batches} batches of {batch_size}",
+                  dynamic_ncols = True,
+                  leave         = True):
+    
+    episode_data = run_episode(env, task, policy, batch_size, n_t, device)
+    
+    loss_dict = calculate_loss(episode_data)
+    total_losses.append(loss_dict['total'].item())
+    cartesian_losses.append(loss_dict['cartesian'].item())
+    muscle_losses.append(loss_dict['muscle'].item())
+    spectral_losses.append(loss_dict['spectral'].item())
+    jerk_losses.append(loss_dict['jerk'].item())
+
+    loss_dict['total'].backward()
+
+    # important to make sure gradients don't get crazy
+    th.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=1)  
+
+    optimizer.step()
+    optimizer.zero_grad()
+
+# test run on center-out task
+task.run_mode = 'test_center_out'
+episode_data = run_episode(env, task, policy, 8, n_t, device)
+
+# plot the test
+plot_handpaths(episode_data)
+
+
+
