@@ -20,7 +20,7 @@ print('motornet version: ' + mn.__version__)
 device = th.device("cpu")
 
 dt     = 0.01 # time step in seconds
-ep_dur = 1.00 # episode duration in seconds
+ep_dur = 1.30 # episode duration in seconds
 
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
@@ -39,7 +39,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  = 1000
+n_batches  = 5000
 batch_size = 32
 results = {}
 
