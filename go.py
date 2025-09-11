@@ -3,13 +3,14 @@ import numpy as np
 import torch as th
 import motornet as mn
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 from my_env import MyEnvironment
 from my_task import MyTask
 from my_policy import create_policy
 from my_utils import run_episode
 from my_loss import calculate_loss
-from my_plots import plot_handpaths
+from my_plots import plot_handpaths, plot_kinematics, plot_activation
 
 print('All packages imported.')
 print('pytorch version: ' + th.__version__)
@@ -97,5 +98,9 @@ episode_data = run_episode(env, task, policy, 8, n_t, device)
 # plot the test
 fig,ax = plot_handpaths(episode_data)
 fig.savefig("handpaths.png")
+fig,ax = plot_kinematics(episode_data)
+fig.savefig("kinematics.png")
+fig,ax = plot_activation(episode_data)
+fig.savefig("activation.png")
 
 

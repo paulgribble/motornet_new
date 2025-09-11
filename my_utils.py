@@ -13,7 +13,8 @@ def applied_load(endpoint_vel, k, mode = 'CW'):
 
 
 # Run a single episode
-def run_episode(env, task, policy, batch_size, n_t, device, k = 0, *args, **kwargs ):
+def run_episode(env, task, policy, batch_size, n_t, device, k = 0):
+    
     inputs, targets, init_states = task.generate(batch_size, n_t)
     targets = th.tensor(targets[:, :, 0:2], device=device, dtype=th.float)
     inp = th.tensor(inputs['inputs'], device=device, dtype=th.float)

@@ -28,7 +28,6 @@ class MyTask:
         angle = np.linspace(0,2*np.pi,n, endpoint=False)
         offset = rad*np.array([np.cos(angle), np.sin(angle),np.zeros(n),np.zeros(n)])
 
-
         if self.run_mode == 'test_center_out': # This is example of why alternate run modes are useful. We can turn off catch trials, fix the delay period length, and put the arm at one location
             catch_chance = 0.
             delay_range = [0.2, 0.2]
@@ -58,7 +57,8 @@ class MyTask:
             else:
                 targets[i, :, :] = np.tile(np.expand_dims(self.effector.joint2cartesian(self.effector.draw_random_uniform_states(1)).detach().cpu().numpy(), axis=1),(1, n_timesteps, 1))
 
-            inputs[i, :, 0:2] = targets[i, -1, 0:2]
+#            inputs[i, :, 0:2] = targets[i, -1, 0:2]            
+
             # Go cue
             inputs[i, :, 2] = 1.
 
@@ -68,6 +68,8 @@ class MyTask:
             else:
                 targets[i, :, :] = start_point
 
+            inputs[i, :, 0:2] = targets[i, :, 0:2]
+            
             # Add noise to the inputs
             inputs[i, :, :] = inputs[i, :, :] + np.random.normal(loc=0., scale=1e-3,
                                                                  size=(inputs.shape[1], inputs.shape[2]))
