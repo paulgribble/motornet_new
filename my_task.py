@@ -6,7 +6,8 @@ class MyTask:
     def __init__(self, effector, **kwargs):
         self.effector = effector
         self.dt = self.effector.dt
-        self.delay_range = kwargs.get('delay_range', [0.1, 0.3]) # delay period
+        self.tgt_delay_range = kwargs.get('tgt_delay_range', [0.1, 0.3]) # tgt delay period
+        self.go_delay_range = kwargs.get('go_delay_range', [0.3, 0.6]) # tgt delay period
         self.run_mode = kwargs.get('run_mode', 'train') # run mode – this is useful to switch between a training mode and an experimental mode, or different versions of a task
 
     def generate(self, batch_size, n_timesteps, **kwargs):
@@ -17,9 +18,9 @@ class MyTask:
         # create empty input matrix with 2 dimensions for the x and y coordinates, and 1 for the go cue
         inputs = np.zeros(shape=(batch_size, n_timesteps, 2 + 1))
 
-        delay_range = self.delay_range
+        tgt_delay_range = self.tgt_delay_range
+        go_delay_range  = self.go_delay_range
 
-        # base_joint = np.deg2rad([60., 80., 0., 0.]).astype(np.float32)
         base_joint = np.deg2rad([50., 90., 0., 0.]).astype(np.float32)
 
         # Circular targets
@@ -30,7 +31,8 @@ class MyTask:
 
         if self.run_mode == 'test_center_out': # This is example of why alternate run modes are useful. We can turn off catch trials, fix the delay period length, and put the arm at one location
             catch_chance = 0.
-            delay_range = [0.2, 0.2]
+            tgt_delay_range = [0.2, 0.2]
+            go_delay_range  = [0.4, 0.4]
             init_states = np.repeat(np.expand_dims(base_joint, axis=0), batch_size, axis=0)
         elif self.run_mode == 'train_center_out':
             catch_chance = 0.5
@@ -41,7 +43,8 @@ class MyTask:
 
         # Create inputs and targets for all individual trials in the batch
         for i in range(batch_size):
-            delay_time = generate_delay_time(delay_range[0] / self.dt, delay_range[1] / self.dt, 'random')
+            tgt_delay_time = generate_delay_time(tgt_delay_range[0] / self.dt, tgt_delay_range[1] / self.dt, 'random')
+            go_delay_time  = generate_delay_time(go_delay_range[0]  / self.dt, go_delay_range[1]  / self.dt, 'random')
             start_point = self.effector.joint2cartesian(th.tensor(init_states[i,:])).to("cpu").numpy()
 
             if np.greater_equal(np.random.rand(), catch_chance):
@@ -57,19 +60,18 @@ class MyTask:
             else:
                 targets[i, :, :] = np.tile(np.expand_dims(self.effector.joint2cartesian(self.effector.draw_random_uniform_states(1)).detach().cpu().numpy(), axis=1),(1, n_timesteps, 1))
 
-#            inputs[i, :, 0:2] = targets[i, -1, 0:2]            
-
-            # Go cue
-            inputs[i, :, 2] = 1.
-
             if not is_catch:
-                targets[i, 0:delay_time, :] = start_point
-                inputs[i, delay_time:, 2] = 0 # turn off go cue to initiate movement
+                inputs[i, 0:tgt_delay_time, 0:2] = start_point[0, 0:2]  # RNN sees start location until tgt_delay
+                inputs[i, tgt_delay_time:, 0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
+                inputs[i, 0:go_delay_time, 2] = 1 # RNN sees no-go until go_delay
+                inputs[i, go_delay_time:, 2] = 0  # then RNN sees go
+                targets[i, 0:go_delay_time, :] = start_point      # targets drive the loss function, desired xy is start_point until go_delay
+                targets[i, go_delay_time:, :] = targets[i, -1, :] # after go_delay desired xy is movement target position
             else:
                 targets[i, :, :] = start_point
+                inputs [i, :, 0:2] = targets[i, :, 0:2]
+                inputs [i, :, 2] = 1.            
 
-            inputs[i, :, 0:2] = targets[i, :, 0:2]
-            
             # Add noise to the inputs
             inputs[i, :, :] = inputs[i, :, :] + np.random.normal(loc=0., scale=1e-3,
                                                                  size=(inputs.shape[1], inputs.shape[2]))
