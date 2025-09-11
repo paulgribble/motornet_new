@@ -26,8 +26,8 @@ ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
 
 # initialize the environment
 env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
-                     proprioception_delay=0.01, vision_delay=0.07,
-                     proprioception_noise=1e-3, vision_noise=1e-3, action_noise=1e-4)
+                    proprioception_delay=0.01, vision_delay=0.07,
+                    proprioception_noise=1e-3, vision_noise=1e-3, action_noise=1e-4)
 obs, info = env.reset()
 n_t = int(ep_dur / env.effector.dt)
 
@@ -95,7 +95,7 @@ task.run_mode = 'test_center_out'
 episode_data = run_episode(env, task, policy, 8, n_t, device)
 
 # plot the test
-plot_handpaths(episode_data)
-
+fig,ax = plot_handpaths(episode_data)
+fig.savefig("handpaths.png")
 
 
