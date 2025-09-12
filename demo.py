@@ -99,13 +99,13 @@ for batch in tqdm(iterable = range(n_batches),
         task.run_mode = 'test_center_out'
         episode_data = run_episode(env, task, policy, 8, n_t, device)
         # plot the test
-        fig,ax = plot_handpaths(episode_data)
+        fig,ax = plot_handpaths(episode_data, f"{batch:04d}")
         fig.savefig(f"handpaths_{batch:04d}.png")
         plt.close(fig)
-        fig,ax = plot_kinematics(episode_data)
+        fig,ax = plot_kinematics(episode_data, f"{batch:04d}")
         fig.savefig(f"kinematics_{batch:04d}.png")
         plt.close(fig)
-        fig,ax = plot_activation(episode_data)
+        fig,ax = plot_activation(episode_data, f"{batch:04d}")
         fig.savefig(f"activation_{batch:04d}.png")
         plt.close(fig)
 
@@ -115,11 +115,11 @@ task.run_mode = 'test_center_out'
 episode_data = run_episode(env, task, policy, 8, n_t, device)
 
 # plot the test
-fig,ax = plot_handpaths(episode_data)
+fig,ax = plot_handpaths(episode_data, "final")
 fig.savefig("handpaths_final.png")
-fig,ax = plot_kinematics(episode_data)
+fig,ax = plot_kinematics(episode_data, "final")
 fig.savefig("kinematics_final.png")
-fig,ax = plot_activation(episode_data)
+fig,ax = plot_activation(episode_data, "final")
 fig.savefig("activation_final.png")
 
 
