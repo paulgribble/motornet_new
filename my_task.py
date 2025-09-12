@@ -68,9 +68,10 @@ class MyTask:
                 targets[i, 0:go_delay_time, :] = start_point      # targets drive the loss function, desired xy is start_point until go_delay
                 targets[i, go_delay_time:, :] = targets[i, -1, :] # after go_delay desired xy is movement target position
             else:
-                targets[i, :, :] = start_point
-                inputs [i, :, 0:2] = targets[i, :, 0:2]
-                inputs [i, :, 2] = 1.            
+                inputs[i, 0:tgt_delay_time, 0:2] = start_point[0, 0:2]  # RNN sees start location until tgt_delay
+                inputs[i, tgt_delay_time:, 0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
+                inputs[i, :, 2] = 1 # RNN sees no-go
+                targets[i, :, :] = start_point # targets drive the loss function
 
             # Add noise to the inputs
             inputs[i, :, :] = inputs[i, :, :] + np.random.normal(loc=0., scale=1e-3,
