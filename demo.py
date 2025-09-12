@@ -10,7 +10,7 @@ from my_task import MyTask
 from my_policy import create_policy
 from my_utils import run_episode
 from my_loss import calculate_loss_michaels_2025_nature
-from my_plots import plot_handpaths, plot_kinematics, plot_activation
+from my_plots import plot_handpaths, plot_kinematics, plot_activation, plot_losses
 
 print('All packages imported.')
 print('pytorch version: ' + th.__version__)
@@ -40,7 +40,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 sim_mode = "train"
 
 n_batches  = 2000
-batch_size =   64
+batch_size =   32
 interval   =  500
 
 results = {}
@@ -48,7 +48,7 @@ results = {}
 input_freeze  = 0      # don't freeze input weights
 output_freeze = 0      # don't freeze output weights
 optimizer_mod = 'Adam' # use the Adam optimizer
-learning_rate = 3e-3   # set learning rate
+learning_rate = 1e-3   # set learning rate
 
 policy, optimizer = create_policy(env, inputs, device, 
                                   policy_func   = mn.policy.ModularPolicyGRU, 
@@ -58,10 +58,17 @@ policy, optimizer = create_policy(env, inputs, device,
 total_losses     = []
 cartesian_losses = []
 muscle_losses    = []
+velocity_losses  = []
+activity_losses  = []
 spectral_losses  = []
 jerk_losses      = []
-endpoint_dev     = []
-lateral_dev      = []
+losses = {'total': total_losses,
+          'cartesian': cartesian_losses,
+          'muscle': muscle_losses,
+          'velocity': velocity_losses,
+          'activity': activity_losses,
+          'spectral': spectral_losses,
+          'jerk': jerk_losses}
 
 task.run_mode = 'train' # random reaches
 
@@ -83,6 +90,8 @@ for batch in tqdm(iterable = range(n_batches),
     total_losses.append(loss_dict['total'].item())
     cartesian_losses.append(loss_dict['cartesian'].item())
     muscle_losses.append(loss_dict['muscle'].item())
+    velocity_losses.append(loss_dict['velocity'].item())
+    activity_losses.append(loss_dict['activity'].item())
     spectral_losses.append(loss_dict['spectral'].item())
     jerk_losses.append(loss_dict['jerk'].item())
 
@@ -100,13 +109,13 @@ for batch in tqdm(iterable = range(n_batches),
         episode_data = run_episode(env, task, policy, 8, n_t, device)
         # plot the test
         fig,ax = plot_handpaths(episode_data, f"{batch:04d}")
-        fig.savefig(f"handpaths_{batch:04d}.png")
+        fig.savefig(f"figs/handpaths_{batch:04d}.png")
         plt.close(fig)
         fig,ax = plot_kinematics(episode_data, f"{batch:04d}")
-        fig.savefig(f"kinematics_{batch:04d}.png")
+        fig.savefig(f"figs/kinematics_{batch:04d}.png")
         plt.close(fig)
         fig,ax = plot_activation(episode_data, f"{batch:04d}")
-        fig.savefig(f"activation_{batch:04d}.png")
+        fig.savefig(f"figs/activation_{batch:04d}.png")
         plt.close(fig)
 
 
@@ -116,10 +125,13 @@ episode_data = run_episode(env, task, policy, 8, n_t, device)
 
 # plot the test
 fig,ax = plot_handpaths(episode_data, "final")
-fig.savefig("handpaths_final.png")
+fig.savefig("figs/handpaths_final.png")
 fig,ax = plot_kinematics(episode_data, "final")
-fig.savefig("kinematics_final.png")
+fig.savefig("figs/kinematics_final.png")
 fig,ax = plot_activation(episode_data, "final")
-fig.savefig("activation_final.png")
+fig.savefig("figs/activation_final.png")
+
+# plot losses
+fig,ax = plot_losses(losses)
 
 

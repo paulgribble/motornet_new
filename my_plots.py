@@ -13,7 +13,7 @@ def plot_handpaths(episode_data, figtext=""):
     plotor = mn.plotor.plot_pos_over_time
     plotor(axis=ax, cart_results=xy)
     ax.scatter(target_x, target_y)
-    fig.suptitle(f"{figtext}", fontsize=16)
+    fig.suptitle(f"{figtext}", fontsize=14)
     fig.tight_layout()
     return fig, ax
 
@@ -34,7 +34,7 @@ def plot_kinematics(episode_data, figtext=""):
         ax[i, 1].set_ylabel('vel')
         ax[i, 0].set_xlabel('time steps')
         ax[i, 1].set_xlabel('time steps')
-    fig.suptitle(f"{figtext}", fontsize=16)
+    fig.suptitle(f"{figtext}", fontsize=14)
     fig.tight_layout()
     return fig, ax
 
@@ -52,6 +52,25 @@ def plot_activation(episode_data, figtext=""):
         ax[i, 1].set_ylabel('hidden act (au)')
         ax[i, 0].set_xlabel('time steps')
         ax[i, 1].set_xlabel('time steps')
-    fig.suptitle(f"{figtext}", fontsize=16)
+    fig.suptitle(f"{figtext}", fontsize=14)
     fig.tight_layout()
     return fig, ax
+
+def window_average(x, w=10):
+    rows = int(np.size(x)/w)  # round to (floor) int
+    cols = w
+    xw = x[0:w*rows].reshape((rows, cols)).mean(axis=1)
+    return xw
+
+def plot_losses(losses, figtext=""):
+    fig, ax = plt.subplots(figsize=(10,3))
+    for loss in losses.keys():
+        x = range(len(losses[loss]))
+        ax.semilogy(x, losses[loss])
+    ax.legend(losses.keys())
+    ax.set_ylabel("Loss")
+    ax.set_xlabel(f"Batch")
+    fig.suptitle(f"{figtext}", fontsize=14)
+    fig.tight_layout()
+    return fig, ax
+
