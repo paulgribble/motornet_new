@@ -63,13 +63,18 @@ def window_average(x, w=10):
     return xw
 
 def plot_losses(losses, figtext=""):
-    fig, ax = plt.subplots(figsize=(10,3))
-    for loss in losses.keys():
+    n = len(losses.keys())
+    # ymin,ymax = np.inf, -np.inf
+    # for loss in losses.keys():
+    #     ymin = min(ymin, min(losses[loss]))
+    #     ymax = max(ymax, max(losses[loss]))
+    fig, ax = plt.subplots(n,1,figsize=(6,12))
+    for i,loss in enumerate(losses.keys()):
         x = range(len(losses[loss]))
-        ax.semilogy(x, losses[loss])
-    ax.legend(losses.keys())
-    ax.set_ylabel("Loss")
-    ax.set_xlabel(f"Batch")
+        ax[i-1].semilogy(x, losses[loss])
+        ax[i-1].set_ylabel(loss)
+        # ax[i-1].set_ylim(ymin, ymax)
+    ax[n-1].set_xlabel(f"Batch")
     fig.suptitle(f"{figtext}", fontsize=14)
     fig.tight_layout()
     return fig, ax
