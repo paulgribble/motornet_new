@@ -39,8 +39,8 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  = 1000
-batch_size =   32
+n_batches  =  1000
+batch_size =    32
 results = {}
 
 input_freeze  = 0      # don't freeze input weights
