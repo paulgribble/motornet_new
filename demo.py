@@ -1,4 +1,4 @@
-
+import os
 import numpy as np
 import torch as th
 import motornet as mn
@@ -39,9 +39,9 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  = 2000
+n_batches  = 200
 batch_size =   32
-interval   =  500
+interval   =  50
 
 results = {}
 
@@ -73,6 +73,10 @@ losses = {'total': total_losses,
 task.run_mode = 'train' # random reaches
 
 n_t = int(ep_dur / env.effector.dt) + 1 # number of time points
+
+# make directory to store figures
+if not os.path.exists("figs"):
+    os.makedirs("figs", exist_ok=True)
 
 # training loop over batches
 for batch in tqdm(iterable = range(n_batches),
@@ -133,5 +137,6 @@ fig.savefig("figs/activation_final.png")
 
 # plot losses
 fig,ax = plot_losses(losses)
+fig.savefig("figs/losses.png")
 
 
