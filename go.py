@@ -40,7 +40,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 sim_mode = "train"
 
 n_batches  = 2000
-batch_size =   32
+batch_size =   64
 interval   =  500
 
 results = {}
