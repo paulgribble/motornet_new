@@ -5,7 +5,7 @@ import numpy as np
 plotor = mn.plotor.plot_pos_over_time
 
 
-def plot_handpaths(episode_data, figtext=None):
+def plot_handpaths(episode_data, figtext=""):
     target_x = episode_data['targets'][:, -1, 0]
     target_y = episode_data['targets'][:, -1, 1]
     xy = episode_data['xy'][:,:,0:2].detach().numpy()
@@ -17,7 +17,7 @@ def plot_handpaths(episode_data, figtext=None):
     fig.tight_layout()
     return fig, ax
 
-def plot_kinematics(episode_data, figtext=None):
+def plot_kinematics(episode_data, figtext=""):
     all_xy = episode_data['xy'][:,:,0:2].detach().numpy()
     n = np.shape(all_xy)[0] # movements
     all_vel = episode_data['xy'][:,:,2:4].detach().numpy()
@@ -38,7 +38,7 @@ def plot_kinematics(episode_data, figtext=None):
     fig.tight_layout()
     return fig, ax
 
-def plot_activation(episode_data, figtext=None):
+def plot_activation(episode_data, figtext=""):
     all_muscles = episode_data['actions'].detach().numpy()
     all_hidden = episode_data['hidden'].detach().numpy()
     n = np.shape(all_muscles)[0]
