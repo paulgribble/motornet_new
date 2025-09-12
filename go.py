@@ -76,6 +76,7 @@ for batch in tqdm(iterable = range(n_batches),
                   dynamic_ncols = True,
                   leave         = True):
     
+    task.run_mode = 'train' # random reaches
     episode_data = run_episode(env, task, policy, batch_size, n_t, device)
     
     loss_dict = calculate_loss_michaels_2025_nature(episode_data)
@@ -94,6 +95,9 @@ for batch in tqdm(iterable = range(n_batches),
     optimizer.zero_grad()
 
     if (((batch % interval) == 0) and (batch > 0)):
+        # test run on center-out task
+        task.run_mode = 'test_center_out'
+        episode_data = run_episode(env, task, policy, 8, n_t, device)
         # plot the test
         fig,ax = plot_handpaths(episode_data)
         fig.savefig(f"handpaths_{batch:05d}.png")
