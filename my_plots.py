@@ -13,7 +13,7 @@ def plot_handpaths(episode_data, figtext=None):
     plotor = mn.plotor.plot_pos_over_time
     plotor(axis=ax, cart_results=xy)
     ax.scatter(target_x, target_y)
-    fig.suptitle(f{figtext}, fontsize=16)
+    fig.suptitle(f"{figtext}", fontsize=16)
     fig.tight_layout()
     return fig, ax
 
@@ -34,7 +34,7 @@ def plot_kinematics(episode_data, figtext=None):
         ax[i, 1].set_ylabel('vel')
         ax[i, 0].set_xlabel('time steps')
         ax[i, 1].set_xlabel('time steps')
-    fig.suptitle(f{figtext}, fontsize=16)
+    fig.suptitle(f"{figtext}", fontsize=16)
     fig.tight_layout()
     return fig, ax
 
@@ -52,6 +52,6 @@ def plot_activation(episode_data, figtext=None):
         ax[i, 1].set_ylabel('hidden act (au)')
         ax[i, 0].set_xlabel('time steps')
         ax[i, 1].set_xlabel('time steps')
-    fig.suptitle(f{figtext}, fontsize=16)
+    fig.suptitle(f"{figtext}", fontsize=16)
     fig.tight_layout()
     return fig, ax
