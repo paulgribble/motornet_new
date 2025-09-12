@@ -9,7 +9,7 @@ from my_env import MyEnvironment
 from my_task import MyTask
 from my_policy import create_policy
 from my_utils import run_episode
-from my_loss import calculate_loss
+from my_loss import calculate_loss_michaels_2025_nature
 from my_plots import plot_handpaths, plot_kinematics, plot_activation
 
 print('All packages imported.')
@@ -46,7 +46,7 @@ results = {}
 input_freeze  = 0      # don't freeze input weights
 output_freeze = 0      # don't freeze output weights
 optimizer_mod = 'Adam' # use the Adam optimizer
-learning_rate = 1e-3   # set learning rate
+learning_rate = 3e-3   # set learning rate
 
 policy, optimizer = create_policy(env, inputs, device, 
                                   policy_func   = mn.policy.ModularPolicyGRU, 
@@ -76,7 +76,7 @@ for batch in tqdm(iterable = range(n_batches),
     
     episode_data = run_episode(env, task, policy, batch_size, n_t, device)
     
-    loss_dict = calculate_loss(episode_data)
+    loss_dict = calculate_loss_michaels_2025_nature(episode_data)
     total_losses.append(loss_dict['total'].item())
     cartesian_losses.append(loss_dict['cartesian'].item())
     muscle_losses.append(loss_dict['muscle'].item())
