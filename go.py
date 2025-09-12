@@ -99,10 +99,10 @@ for batch in tqdm(iterable = range(n_batches),
         fig.savefig(f"handpaths_{batch:05d}.png")
         plt.close(fig)
         fig,ax = plot_kinematics(episode_data)
-        fig.savefig("kinematics_{batch:05d}.png")
+        fig.savefig(f"kinematics_{batch:05d}.png")
         plt.close(fig)
         fig,ax = plot_activation(episode_data)
-        fig.savefig("activation_{batch:05d}.png")
+        fig.savefig(f"activation_{batch:05d}.png")
         plt.close(fig)
 
 
