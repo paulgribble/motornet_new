@@ -39,8 +39,10 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  =  1000
-batch_size =    32
+n_batches  = 2000
+batch_size =   32
+interval   =  500
+
 results = {}
 
 input_freeze  = 0      # don't freeze input weights
@@ -91,16 +93,29 @@ for batch in tqdm(iterable = range(n_batches),
     optimizer.step()
     optimizer.zero_grad()
 
+    if (((batch % interval) == 0) and (batch > 0)):
+        # plot the test
+        fig,ax = plot_handpaths(episode_data)
+        fig.savefig(f"handpaths_{batch:05d}.png")
+        plt.close(fig)
+        fig,ax = plot_kinematics(episode_data)
+        fig.savefig("kinematics_{batch:05d}.png")
+        plt.close(fig)
+        fig,ax = plot_activation(episode_data)
+        fig.savefig("activation_{batch:05d}.png")
+        plt.close(fig)
+
+
 # test run on center-out task
 task.run_mode = 'test_center_out'
 episode_data = run_episode(env, task, policy, 8, n_t, device)
 
 # plot the test
 fig,ax = plot_handpaths(episode_data)
-fig.savefig("handpaths.png")
+fig.savefig("handpaths_final.png")
 fig,ax = plot_kinematics(episode_data)
-fig.savefig("kinematics.png")
+fig.savefig("kinematics_final.png")
 fig,ax = plot_activation(episode_data)
-fig.savefig("activation.png")
+fig.savefig("activation_final.png")
 
 
