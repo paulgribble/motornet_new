@@ -30,7 +30,6 @@ env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
                     proprioception_delay=0.02, vision_delay=0.07,
                     proprioception_noise=1e-3, vision_noise=1e-3, action_noise=1e-4)
 obs, info = env.reset()
-n_t = int(ep_dur / env.effector.dt)
 
 # initialize the task
 task = MyTask(effector=env.effector)
@@ -55,13 +54,11 @@ policy, optimizer = create_policy(env, inputs, device,
 
 loss_function = my_loss.calculate_loss_shahbazi_2025
 
-task.run_mode = 'train' # random reaches
-
-n_t = int(ep_dur / env.effector.dt) + 1 # number of time points
-
 # make directory to store output
 if not os.path.exists("output"):
     os.makedirs("output", exist_ok=True)
+
+n_t = int(ep_dur / env.effector.dt) + 1 # number of time points
 
 # training loop over batches
 for batch in tqdm(iterable = range(n_batches),
