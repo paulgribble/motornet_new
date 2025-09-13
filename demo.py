@@ -21,6 +21,7 @@ device = th.device("cpu")
 
 dt     = 0.010 # time step in seconds
 ep_dur = 1.500 # episode duration in seconds
+n_t    = int(ep_dur / env.effector.dt) + 1 # number of time points
 
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
@@ -57,8 +58,6 @@ loss_function = my_loss.calculate_loss_shahbazi_2025
 # make directory to store output
 if not os.path.exists("output"):
     os.makedirs("output", exist_ok=True)
-
-n_t = int(ep_dur / env.effector.dt) + 1 # number of time points
 
 # training loop over batches
 for batch in tqdm(iterable = range(n_batches),
