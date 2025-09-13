@@ -80,10 +80,10 @@ for batch in tqdm(iterable      = range(n_batches),
     optimizer.zero_grad()
 
     if (((batch % interval) == 0) and (batch > 0)):
-        # test run on center-out task
         plot_simulations(episode_data, f"{batch:04d}")
         plot_episode(episode_data, f"{batch:04d}")
 
+        # test run on center-out task
         task.run_mode = 'test_center_out'
         episode_data = run_episode(env, task, policy, 8, n_t, device)
         plot_simulations(episode_data, f"{batch:04d}", xylim=[[-.2,.1],[.3,.6]])
