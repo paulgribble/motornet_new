@@ -76,7 +76,7 @@ def plot_losses(losses, figtext=""):
 
 
 #  Plot arm trajectories and errors relative to the target
-def plot_simulations(episode_data, xylim=None, figtext=""):
+def plot_simulations(episode_data, figtext="", xylim=None):
     xy = episode_data['xy'][:,:,0:2].detach().numpy()
     target_xy = episode_data['targets'].detach().numpy()
     target_x = target_xy[:, -1, 0]
@@ -87,9 +87,9 @@ def plot_simulations(episode_data, xylim=None, figtext=""):
     plt.subplot(1,2,1)
     plt.ylim([-0.3, 1])
     plt.xlim([-0.7, 0.7])
-    if not xylim==None:
-        plt.ylim(xylim[0])
-        plt.xlim(xylim[1])
+    if xylim is not None:
+        plt.xlim(xylim[0])
+        plt.ylim(xylim[1])
     plotor(axis=plt.gca(), cart_results=xy)
     plt.scatter(target_x, target_y)
     # deviation from target
