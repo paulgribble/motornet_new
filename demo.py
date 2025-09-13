@@ -25,7 +25,7 @@ dt         =    0.010 # time step in seconds
 ep_dur     =    3.00  # episode duration in seconds
 n_batches  = 2000
 batch_size =   64
-interval   =  200
+interval   =  100
 output_dir = 'output'
 
 
@@ -108,6 +108,9 @@ for batch in tqdm(iterable      = range(n_batches),
         plot_simulations(episode_data, f"{batch:04d}", xylim=[[-.2,.1],[.3,.6]])
         plot_episode(episode_data, f"{batch:04d}")
 
+        # Save weights
+        th.save(policy.state_dict(), output_dir + f'/weights.pt')
+
 losses = {
     'cartesian' : cartesian_loss,
     'muscle'    : muscle_loss,
@@ -132,10 +135,9 @@ fig.savefig(output_dir + "/activation_final.png")
 # Save results
 print(f"saving {output_dir}/weights.pt and {output_dir}/results.pt ...")
 th.save(policy.state_dict(), output_dir + f'/weights.pt')
-results = {
-    'episode_data': episode_data,
-    'losses'      : losses
-    }
+results = { 'episode_data': episode_data,
+           'losses'      : losses
+           }
 th.save(results, output_dir + "/results.pt")
 
 
