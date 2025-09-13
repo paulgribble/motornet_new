@@ -22,8 +22,8 @@ device = th.device("cpu")
 
 
 dt         =     0.010 # time step in seconds
-ep_dur     =     1.00  # episode duration in seconds
-n_batches  =  2000
+ep_dur     =     1.60  # episode duration in seconds
+n_batches  =  5000
 batch_size =    64
 interval   =   200
 output_dir = 'output'
@@ -47,14 +47,14 @@ inputs, targets, init_states = task.generate(1, n_t)
 sim_mode = "train"
 
 optimizer_mod = 'Adam' # use the Adam optimizer
-learning_rate = 3e-3   # set learning rate
+learning_rate = 1e-3   # set learning rate
 
 policy, optimizer = create_policy(env, inputs, device, 
                                   policy_func   = mn.policy.ModularPolicyGRU, 
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-loss_function = my_loss.calculate_loss_mirzazadeh
+loss_function = my_loss.calculate_loss_shahbazi_2025
 
 total_loss     = []
 cartesian_loss = []
@@ -146,7 +146,7 @@ output_dir = "output"
 w = th.load(output_dir + "/weights.pt", weights_only=True)
 device = th.device("cpu")
 dt     =    0.010 # time step in seconds
-ep_dur =    3.00  # episode duration in seconds
+ep_dur =    1.60  # episode duration in seconds
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
 env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
