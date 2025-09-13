@@ -115,15 +115,15 @@ def calculate_loss_paul(episode_data):
     hidden  = episode_data['hidden']
     force   = episode_data['force']
 
-    position_loss = 1e+3 * th.mean(th.sum(th.abs(data['xy']-data['tg']), dim=-1))
-    speed_loss    = 0e+0 * th.mean(th.sum(th.square(data['vel']), dim=-1))
-    jerk_loss     = 1e+5 * th.mean(th.sum(th.square(th.diff(data['vel'], n=2, dim=1)), dim=-1))
-    muscle_loss   = 1e-1 * th.mean(th.sum(data['all_force'], dim=-1))
-    muscle_d_loss = 3e-4 * th.mean(th.sum(th.square(th.diff(data['all_force'], n=1, dim=1)), dim=-1))
-    hidden_loss   = 1e-5 * th.mean(th.sum(th.square(data['all_hidden']), dim=-1))
-    hidden_d_loss = 1e-3 * th.mean(th.sum(th.square(th.diff(data['all_hidden'], n=1, dim=1)), dim=-1))
+    position_loss = 1e+3 * th.mean(th.sum(th.abs(xy[:, :, 0:2] - targets), dim=-1))
+    speed_loss    = 0e+0 * th.mean(th.sum(th.square(xy[:, :, 2:]), dim=-1))
+    jerk_loss     = 1e+5 * th.mean(th.sum(th.square(th.diff(xy[:, :, 2:], 2, dim=1)), dim=-1))
+    muscle_loss   = 1e-1 * th.mean(th.sum(force, dim=-1))
+    muscle_d_loss = 3e-4 * th.mean(th.sum(th.square(th.diff(force, 1, dim=1)), dim=-1))
+    hidden_loss   = 1e-5 * th.mean(th.sum(th.square(hidden), dim=-1))
+    spectral_loss = 1e+0 * th.mean(th.sum(th.square(th.diff(hidden, 2, dim=1)), dim=-1))
 
-    total_loss = position_loss + speed_loss + jerk_loss + muscle_loss + muscle_d_loss + hidden_loss + hidden_d_loss
+    total_loss = position_loss + speed_loss + jerk_loss + muscle_loss + muscle_d_loss + hidden_loss + spectral_loss
 
     return {
         'total'     : total_loss,
@@ -133,5 +133,5 @@ def calculate_loss_paul(episode_data):
         'muscle'    : muscle_loss,
         'muscle_d'  : muscle_d_loss,
         'hidden'    : hidden_loss,
-        'hidden_d'  : hidden_d_loss,
+        'spectral'  : spectral_loss,
     }
