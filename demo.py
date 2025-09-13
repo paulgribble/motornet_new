@@ -22,7 +22,7 @@ device = th.device("cpu")
 
 
 dt         =     0.010 # time step in seconds
-ep_dur     =     1.60  # episode duration in seconds
+ep_dur     =     1.600 # episode duration in seconds
 n_batches  =  5000
 batch_size =    64
 interval   =   200
@@ -83,6 +83,10 @@ for batch in tqdm(iterable      = range(n_batches),
     
     loss_dict = loss_function(episode_data)
     loss_dict['total'].backward()
+    # important to make sure gradients don't get crazy
+    th.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=1)  
+    optimizer.step()
+    optimizer.zero_grad()
 
     total_loss.append(     loss_dict['total'].item())
     cartesian_loss.append( loss_dict['cartesian'].item())
@@ -91,12 +95,6 @@ for batch in tqdm(iterable      = range(n_batches),
     activity_loss.append(  loss_dict['activity'].item())
     spectral_loss.append(  loss_dict['spectral'].item())
     jerk_loss.append(      loss_dict['jerk'].item())
-
-    # important to make sure gradients don't get crazy
-    th.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=1)  
-
-    optimizer.step()
-    optimizer.zero_grad()
 
     if (((batch % interval) == 0) and (batch > 0)):
         plot_simulations(episode_data, f"{batch:04d}")
@@ -146,7 +144,7 @@ output_dir = "output"
 w = th.load(output_dir + "/weights.pt", weights_only=True)
 device = th.device("cpu")
 dt     =    0.010 # time step in seconds
-ep_dur =    1.60  # episode duration in seconds
+ep_dur =    1.600 # episode duration in seconds
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
 env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
