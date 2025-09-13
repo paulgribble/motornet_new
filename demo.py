@@ -60,7 +60,7 @@ if not os.path.exists("output"):
     os.makedirs("output", exist_ok=True)
 
 # training loop over batches
-for batch in tqdm(iterable = range(n_batches),
+for batch in tqdm(iterable      = range(n_batches),
                   unit          = "batch",
                   total         = n_batches,
                   desc          = f"training {n_batches} batches of {batch_size}",
