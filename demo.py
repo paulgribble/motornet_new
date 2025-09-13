@@ -41,7 +41,7 @@ sim_mode = "train"
 
 n_batches  = 10000
 batch_size =    32
-interval   =  1000
+interval   =   500
 
 input_freeze  = 0      # don't freeze input weights
 output_freeze = 0      # don't freeze output weights
@@ -53,7 +53,7 @@ policy, optimizer = create_policy(env, inputs, device,
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-loss_function = my_loss.calculate_loss_shahbazi_2025
+loss_function = my_loss.calculate_loss_paul
 
 # make directory to store output
 if not os.path.exists("output"):
