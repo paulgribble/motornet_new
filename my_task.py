@@ -31,8 +31,8 @@ class MyTask:
 
         if self.run_mode == 'test_center_out': # This is example of why alternate run modes are useful. We can turn off catch trials, fix the delay period length, and put the arm at one location
             catch_chance = 0.
-            tgt_delay_range = [0.2, 0.2]
-            go_delay_range  = [0.4, 0.4]
+            tgt_delay_range = [0.25, 0.25]
+            go_delay_range  = [0.50, 0.50]
             init_states = np.repeat(np.expand_dims(base_joint, axis=0), batch_size, axis=0)
         elif self.run_mode == 'train_center_out':
             catch_chance = 0.5
