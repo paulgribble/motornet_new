@@ -71,7 +71,7 @@ def calculate_loss_kashefi_2025(episode_data):
     muscle_loss    = 1e-4 * th.mean(th.sum(force, dim=-1))
     muscle_d_loss  = 1e-4 * th.mean(th.sum(th.square(th.diff(force, 1, dim=1)), dim=-1))
     activity_loss  = 1e-2 * th.mean(th.sum(th.square(hidden), dim=-1))
-    spectral_loss  = 1e-1 * th.mean(th.sum(th.square(th.diff(hidden, 1, dim=1)), dim=-1))
+    spectral_loss  = 1e-1 * th.mean(th.sum(th.square(th.diff(hidden, 2, dim=1)), dim=-1))
   
     total_loss = cartesian_loss + velocity_loss + jerk_loss + muscle_loss + muscle_d_loss + activity_loss + spectral_loss
 
