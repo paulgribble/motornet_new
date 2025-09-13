@@ -39,7 +39,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  = 10000
+n_batches  =  2000
 batch_size =    32
 interval   =   500
 
@@ -63,7 +63,6 @@ if not os.path.exists("output"):
 for batch in tqdm(iterable = range(n_batches),
                   unit          = "batch",
                   total         = n_batches,
-                  mininterval   = 1.0,
                   desc          = f"training {n_batches} batches of {batch_size}",
                   dynamic_ncols = True,
                   leave         = True):
