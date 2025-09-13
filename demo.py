@@ -21,7 +21,6 @@ device = th.device("cpu")
 
 dt     = 0.010 # time step in seconds
 ep_dur = 1.500 # episode duration in seconds
-n_t    = int(ep_dur / env.effector.dt) + 1 # number of time points
 
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
@@ -33,6 +32,7 @@ env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
 obs, info = env.reset()
 
 # initialize the task
+n_t  = int(ep_dur / env.effector.dt) + 1 # number of time points
 task = MyTask(effector=env.effector)
 inputs, targets, init_states = task.generate(1, n_t)
 
