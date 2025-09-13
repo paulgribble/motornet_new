@@ -1,0 +1,2 @@
+- store losses to a file and plot them at end of demo script
+- 
