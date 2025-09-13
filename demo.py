@@ -55,7 +55,7 @@ policy, optimizer = create_policy(env, inputs, device,
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-loss_function = my_loss.calculate_loss_shahbazi_2025
+loss_function = my_loss.calculate_loss_paul
 
 task.run_mode = 'train' # random reaches
 
