@@ -6,8 +6,8 @@ class MyTask:
     def __init__(self, effector, **kwargs):
         self.effector = effector
         self.dt = self.effector.dt
-        self.tgt_delay_range = kwargs.get('tgt_delay_range', [0.1, 0.5]) # tgt delay period
-        self.go_delay_range  = kwargs.get('go_delay_range',  [0.5, 0.9]) # tgt delay period
+        self.tgt_delay_range = kwargs.get('tgt_delay_range', [0.25, 0.75]) # tgt delay period
+        self.go_delay_range  = kwargs.get('go_delay_range',  [0.75, 1.25]) # tgt delay period
         self.run_mode = kwargs.get('run_mode', 'train') # run mode – this is useful to switch between a training mode and an experimental mode, or different versions of a task
 
     def generate(self, batch_size, n_timesteps, **kwargs):
@@ -31,8 +31,8 @@ class MyTask:
 
         if self.run_mode == 'test_center_out': # This is example of why alternate run modes are useful. We can turn off catch trials, fix the delay period length, and put the arm at one location
             catch_chance = 0.
-            tgt_delay_range = [0.30, 0.30]
-            go_delay_range  = [0.60, 0.60]
+            tgt_delay_range = [0.50, 0.50]
+            go_delay_range  = [1.00, 1.00]
             init_states = np.repeat(np.expand_dims(base_joint, axis=0), batch_size, axis=0)
         elif self.run_mode == 'train_center_out':
             catch_chance = 0.5
