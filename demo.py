@@ -10,7 +10,7 @@ from my_task import MyTask
 from my_policy import create_policy
 from my_utils import run_episode
 import my_loss
-from my_plots import plot_handpaths, plot_kinematics, plot_activation, plot_losses
+from my_plots import plot_handpaths, plot_kinematics, plot_activation, plot_losses, plot_simulations, plot_episode
 
 print('All packages imported.')
 print('pytorch version: ' + th.__version__)
@@ -41,7 +41,7 @@ sim_mode = "train"
 
 n_batches  =  2000
 batch_size =    32
-interval   =   500
+interval   =   200
 
 input_freeze  = 0      # don't freeze input weights
 output_freeze = 0      # don't freeze output weights
@@ -84,15 +84,17 @@ for batch in tqdm(iterable = range(n_batches),
         task.run_mode = 'test_center_out'
         episode_data = run_episode(env, task, policy, 8, n_t, device)
         # plot the test
-        fig,ax = plot_handpaths(episode_data, f"{batch:04d}")
-        fig.savefig(f"output/handpaths_{batch:04d}.png")
-        plt.close(fig)
-        fig,ax = plot_kinematics(episode_data, f"{batch:04d}")
-        fig.savefig(f"output/kinematics_{batch:04d}.png")
-        plt.close(fig)
-        fig,ax = plot_activation(episode_data, f"{batch:04d}")
-        fig.savefig(f"output/activation_{batch:04d}.png")
-        plt.close(fig)
+        # fig,ax = plot_handpaths(episode_data, f"{batch:04d}")
+        # fig.savefig(f"output/handpaths_{batch:04d}.png")
+        # plt.close(fig)
+        # fig,ax = plot_kinematics(episode_data, f"{batch:04d}")
+        # fig.savefig(f"output/kinematics_{batch:04d}.png")
+        # plt.close(fig)
+        # fig,ax = plot_activation(episode_data, f"{batch:04d}")
+        # fig.savefig(f"output/activation_{batch:04d}.png")
+        # plt.close(fig)
+        plot_simulations(episode_data, f"{batch:04d}")
+        plot_episode(episode_data, f"{batch:04d}")
 
 
 # test run on center-out task

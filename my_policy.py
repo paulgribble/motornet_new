@@ -9,7 +9,7 @@ def create_policy(env, inputs, device, policy_func, optimizer_mod, learning_rate
     connectivity_mask = np.array([[1]])
     connectivity_mask[connectivity_mask > 1] = 1
     connectivity_delay = np.zeros_like(connectivity_mask)
-    module_sizes = [64]
+    module_sizes = [128]
     spectral_scaling = 1
     # input sparsity
     vision_dim = np.arange(env.get_vision().shape[1])

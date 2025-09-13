@@ -74,3 +74,51 @@ def plot_losses(losses, figtext=""):
     fig.tight_layout()
     return fig, ax
 
+
+#  Plot arm trajectories and errors relative to the target
+def plot_simulations(episode_data, figtext=""):
+    xy = episode_data['xy'][:,:,0:2].detach().numpy()
+    target_xy = episode_data['targets'].detach().numpy()
+    target_x = target_xy[:, -1, 0]
+    target_y = target_xy[:, -1, 1]
+    fg = plt.figure(figsize=(10,4))
+    fg.suptitle(figtext, fontsize=14)
+    # trajectory in workspace
+    plt.subplot(1,2,1)
+    plt.ylim([-0.3, 1])
+    plt.xlim([-0.7, 0.7])
+    plotor(axis=plt.gca(), cart_results=xy)
+    plt.scatter(target_x, target_y)
+    # deviation from target
+    plt.subplot(1,2,2)
+    plt.ylim([-0.5, 0.5])
+    plt.xlim([-0.5, 0.5])
+    plotor(axis=plt.gca(), cart_results=xy - target_xy)
+    plt.axhline(0, c="grey")
+    plt.axvline(0, c="grey")
+    plt.xlabel("X distance to target")
+    plt.ylabel("Y distance to target")
+    plt.show()
+
+
+# Plot neural activity, muscle activity, inputs, targets and trajectory for a given episode
+def plot_episode(episode_data, figtext=""):
+    xy = episode_data['xy']
+    all_targets = episode_data['targets']
+    all_hidden = episode_data['hidden']
+    all_muscle = episode_data['muscle']
+    inp = episode_data['inp']
+    fg, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 7))
+    fg.suptitle(f'{figtext}', fontsize=14)
+    ind = 0
+    ax[0, 0].plot(np.squeeze(all_hidden.detach().cpu().numpy()[ind, :, :]))
+    ax[0, 0].title.set_text('Neural activity')
+    ax[0, 1].plot(np.squeeze(all_muscle.detach().cpu().numpy()[ind, :, :]))
+    ax[0, 1].title.set_text('Muscle activity')
+    ax[1, 0].plot(np.squeeze(inp.detach().cpu().numpy()[ind, :, :]))
+    ax[1, 0].title.set_text('Inputs')
+    ax[1, 1].plot(
+        np.concatenate((all_targets.detach().cpu().numpy()[ind, :, 0:2], xy.detach().cpu().numpy()[ind, :, 0:2]),
+                        axis=1))
+    ax[1, 1].title.set_text('Targets and outputs')
+    plt.show()
