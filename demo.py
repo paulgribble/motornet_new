@@ -23,9 +23,9 @@ device = th.device("cpu")
 
 dt         =    0.010 # time step in seconds
 ep_dur     =    3.00  # episode duration in seconds
-n_batches  = 10
+n_batches  = 2000
 batch_size =   64
-interval   =  5
+interval   =  200
 output_dir = 'output'
 
 
