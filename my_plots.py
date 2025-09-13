@@ -116,10 +116,10 @@ def plot_episode(episode_data, figtext=""):
     ind = 0
     ax[0, 0].plot(np.squeeze(all_hidden.detach().cpu().numpy()[ind, :, :]))
     ax[0, 0].title.set_text('Neural activity')
-    ax[0, 0].set_ylim([-1, 1])
+ #   ax[0, 0].set_ylim([-1, 1])
     ax[0, 1].plot(np.squeeze(all_muscle.detach().cpu().numpy()[ind, :, :]))
     ax[0, 1].title.set_text('Muscle activity')
-    ax[0, 1].set_ylim([0, 1])
+#    ax[0, 1].set_ylim([0, 1])
     ax[1, 0].plot(np.squeeze(inp.detach().cpu().numpy()[ind, :, :]))
     ax[1, 0].title.set_text('Inputs')
     ax[1, 1].plot(

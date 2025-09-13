@@ -138,3 +138,31 @@ results = {
     }
 th.save(results, output_dir + "/results.pt")
 
+
+# Load weights and run center-out test
+output_dir = "output"
+w = th.load(output_dir + "/weights.pt", weights_only=True)
+device = th.device("cpu")
+mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
+ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
+env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
+                    proprioception_delay=0.02, vision_delay=0.07,
+                    proprioception_noise=1e-3, vision_noise=1e-3, action_noise=1e-4)
+obs, info = env.reset()
+n_t  = int(ep_dur / env.effector.dt) + 1 # number of time points
+task = MyTask(effector=env.effector)
+inputs, targets, init_states = task.generate(1, n_t)
+policy, optimizer = create_policy(env, inputs, device, 
+                                  policy_func   = mn.policy.ModularPolicyGRU, 
+                                  optimizer_mod = 'Adam', 
+                                  learning_rate = 3e-3)
+task.run_mode = 'test_center_out'
+episode_data = run_episode(env, task, policy, 8, n_t, device)
+plot_simulations(episode_data, f"{batch:04d}", xylim=[[-.2,.1],[.3,.6]])
+plot_episode(episode_data, f"{batch:04d}")
+fig,ax = plot_handpaths(episode_data, "final")
+fig,ax = plot_kinematics(episode_data, "final")
+fig,ax = plot_activation(episode_data, "final")
+
+
+
