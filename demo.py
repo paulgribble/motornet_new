@@ -20,7 +20,7 @@ print('motornet version: ' + mn.__version__)
 device = th.device("cpu")
 
 dt     = 0.010 # time step in seconds
-ep_dur = 1.500 # episode duration in seconds
+ep_dur = 3.00 # episode duration in seconds
 
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
@@ -39,21 +39,21 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  = 10000
+n_batches  =  5000
 batch_size =    64
 interval   =   100
 
 input_freeze  = 0      # don't freeze input weights
 output_freeze = 0      # don't freeze output weights
 optimizer_mod = 'Adam' # use the Adam optimizer
-learning_rate = 1e-3   # set learning rate
+learning_rate = 3e-3   # set learning rate
 
 policy, optimizer = create_policy(env, inputs, device, 
                                   policy_func   = mn.policy.ModularPolicyGRU, 
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-loss_function = my_loss.calculate_loss_paul
+loss_function = my_loss.calculate_loss_michaels_2025_nature
 
 # make directory to store output
 if not os.path.exists("output"):
