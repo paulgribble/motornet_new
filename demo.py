@@ -145,6 +145,8 @@ th.save(results, output_dir + "/results.pt")
 output_dir = "output"
 w = th.load(output_dir + "/weights.pt", weights_only=True)
 device = th.device("cpu")
+dt     =    0.010 # time step in seconds
+ep_dur =    3.00  # episode duration in seconds
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
 env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
@@ -160,11 +162,10 @@ policy, optimizer = create_policy(env, inputs, device,
                                   learning_rate = 3e-3)
 task.run_mode = 'test_center_out'
 episode_data = run_episode(env, task, policy, 8, n_t, device)
-plot_simulations(episode_data, f"{batch:04d}", xylim=[[-.2,.1],[.3,.6]])
-plot_episode(episode_data, f"{batch:04d}")
-fig,ax = plot_handpaths(episode_data, "final")
-fig,ax = plot_kinematics(episode_data, "final")
-fig,ax = plot_activation(episode_data, "final")
+plot_episode(episode_data)
+plot_simulations(episode_data, xylim=[[-.2,.1],[.3,.6]])
+plot_kinematics(episode_data)
+plot_activation(episode_data)
 
 
 
