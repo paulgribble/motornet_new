@@ -13,8 +13,8 @@ def calculate_loss_mirzazadeh(episode_data):
     muscle_loss    = 1e-1 * th.mean(th.sum(force, dim=-1))
     spectral_loss  = 1e+4 * th.mean(th.sum(th.square(th.diff(hidden, 2, dim=1)), dim=-1))
     jerk_loss      = 1e+3 * th.mean(th.sum(th.square(th.diff(xy[:, :, 2:], 2, dim=1)), dim=-1))
-    velocity_loss  = 0e+0 #* th.mean(th.sum(th.square(xy[:, :, 2:]), dim=-1))
-    activity_loss  = 0e+0 #* th.mean(th.sum(th.square(hidden), dim=-1))
+    velocity_loss  = th.tensor(0e+0) #* th.mean(th.sum(th.square(xy[:, :, 2:]), dim=-1))
+    activity_loss  = th.tensor(0e+0) #* th.mean(th.sum(th.square(hidden), dim=-1))
 
     total_loss = cartesian_loss + muscle_loss + velocity_loss + activity_loss + jerk_loss + spectral_loss
 
@@ -97,9 +97,9 @@ def calculate_loss_shahbazi_2025(episode_data):
 
     cartesian_loss = 1e+3 * th.mean(th.sum(th.abs(xy[:, :, 0:2] - targets), dim=-1))
     muscle_loss    = 1e-1 * th.mean(th.sum(force, dim=-1))
-    spectral_loss  = 0e+0 #* th.mean(th.sum(th.square(th.diff(hidden, 2, dim=1)), dim=-1))
+    spectral_loss  = th.tensor(0e+0) #* th.mean(th.sum(th.square(th.diff(hidden, 2, dim=1)), dim=-1))
     jerk_loss      = 1e+5 * th.mean(th.sum(th.square(th.diff(xy[:, :, 2:], 2, dim=1)), dim=-1))
-    velocity_loss  = 0e+0 #* th.mean(th.sum(th.square(xy[:, :, 2:]), dim=-1))
+    velocity_loss  = th.tensor(0e+0) #* th.mean(th.sum(th.square(xy[:, :, 2:]), dim=-1))
     activity_loss  = 1e-5 * th.mean(th.sum(th.square(hidden), dim=-1))
 
     total_loss = cartesian_loss + muscle_loss + velocity_loss + activity_loss + jerk_loss + spectral_loss
