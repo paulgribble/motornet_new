@@ -86,7 +86,7 @@ for batch in tqdm(iterable = range(n_batches),
 
         task.run_mode = 'test_center_out'
         episode_data = run_episode(env, task, policy, 8, n_t, device)
-        plot_simulations(episode_data, f"{batch:04d}")
+        plot_simulations(episode_data, f"{batch:04d}", xylim=[[-.2,.1],[.3,.6]])
         plot_episode(episode_data, f"{batch:04d}")
 
 # test run on center-out task
