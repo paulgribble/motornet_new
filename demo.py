@@ -20,7 +20,7 @@ print('motornet version: ' + mn.__version__)
 device = th.device("cpu")
 
 dt     = 0.010 # time step in seconds
-ep_dur = 1.600 # episode duration in seconds
+ep_dur = 2.000 # episode duration in seconds
 
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
