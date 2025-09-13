@@ -62,14 +62,14 @@ class MyTask:
 
             if not is_catch:
                 inputs[i, 0:tgt_delay_time, 0:2] = start_point[0, 0:2]  # RNN sees start location until tgt_delay
-                inputs[i, tgt_delay_time:,  0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
-                inputs[i, 0:go_delay_time, 2] = 0 # RNN sees no-go until go_delay
+                inputs[i, tgt_delay_time:,  0:2] = targets[i, -1, 0:2]  # then RNN sees final movement target
+                inputs[i, 0:go_delay_time, 2] = 0  # RNN sees no-go until go_delay
                 inputs[i, go_delay_time:,  2] = 1  # then RNN sees go
-                targets[i, 0:go_delay_time, :] = start_point      # targets drive the loss function, desired xy is start_point until go_delay
+                targets[i, 0:go_delay_time, :] = start_point       # targets drive the loss function, desired xy is start_point until go_delay
                 targets[i, go_delay_time:,  :] = targets[i, -1, :] # after go_delay desired xy is movement target position
             else:
                 inputs[i, 0:tgt_delay_time, 0:2] = start_point[0, 0:2]  # RNN sees start location until tgt_delay
-                inputs[i, tgt_delay_time:,  0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
+                inputs[i, tgt_delay_time:,  0:2] = targets[i, -1, 0:2]  # then RNN sees final movement target
                 inputs[i, :,  2] = 0 # RNN sees no-go
                 targets[i, :, :] = start_point # targets drive the loss function
 

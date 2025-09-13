@@ -118,10 +118,10 @@ def calculate_loss_paul(episode_data):
     position_loss = 1e+3 * th.mean(th.sum(th.abs(xy[:, :, 0:2] - targets), dim=-1))
     speed_loss    = 0e+0 * th.mean(th.sum(th.square(xy[:, :, 2:]), dim=-1))
     jerk_loss     = 0e+0 * th.mean(th.sum(th.square(th.diff(xy[:, :, 2:], 2, dim=1)), dim=-1))
-    muscle_loss   = 1e-3 * th.mean(th.sum(force, dim=-1))
+    muscle_loss   = 1e+0 * th.mean(th.sum(force, dim=-1))
     muscle_d_loss = 0e+0 * th.mean(th.sum(th.square(th.diff(force, 1, dim=1)), dim=-1))
-    hidden_loss   = 0e+0 * th.mean(th.sum(th.square(hidden), dim=-1))
-    spectral_loss = 1e-3 * th.mean(th.sum(th.square(th.diff(hidden, 2, dim=1)), dim=-1))
+    hidden_loss   = 1e-1 * th.mean(th.sum(th.square(hidden), dim=-1))
+    spectral_loss = 1e+0 * th.mean(th.sum(th.square(th.diff(hidden, 2, dim=1)), dim=-1))
 
     total_loss = position_loss + speed_loss + jerk_loss + muscle_loss + muscle_d_loss + hidden_loss + spectral_loss
 

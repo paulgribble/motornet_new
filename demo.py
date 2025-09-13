@@ -39,7 +39,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  =  2000
+n_batches  = 10000
 batch_size =    64
 interval   =   100
 
@@ -53,7 +53,7 @@ policy, optimizer = create_policy(env, inputs, device,
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-loss_function = my_loss.calculate_loss_mirzazadeh
+loss_function = my_loss.calculate_loss_paul
 
 # make directory to store output
 if not os.path.exists("output"):
