@@ -159,7 +159,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 policy, optimizer = create_policy(env, inputs, device, 
                                   policy_func   = mn.policy.ModularPolicyGRU, 
                                   optimizer_mod = 'Adam', 
-                                  learning_rate = 3e-3)
+                                  learning_rate = 1e-3)
 policy.load_state_dict(w)
 task.run_mode = 'test_center_out'
 episode_data = run_episode(env, task, policy, 8, n_t, device)
