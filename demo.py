@@ -22,7 +22,7 @@ device = th.device("cpu")
 
 
 dt         =     0.010 # time step in seconds
-ep_dur     =     2.000 # episode duration in seconds
+ep_dur     =     2.500 # episode duration in seconds
 n_batches  =  5000
 batch_size =    64
 interval   =   200
@@ -54,7 +54,7 @@ policy, optimizer = create_policy(env, inputs, device,
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-loss_function = my_loss.calculate_loss_mirzazadeh
+loss_function = my_loss.calculate_loss_kashefi_2025
 
 
 total_loss     = []
@@ -145,7 +145,7 @@ output_dir = "output"
 w = th.load(output_dir + "/weights.pt", weights_only=True)
 device = th.device("cpu")
 dt     =    0.010 # time step in seconds
-ep_dur =    2.000 # episode duration in seconds
+ep_dur =    2.500 # episode duration in seconds
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
 env = MyEnvironment(max_ep_duration=ep_dur, effector=ee,
