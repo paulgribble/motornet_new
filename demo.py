@@ -9,7 +9,7 @@ from my_env import MyEnvironment
 from my_task import MyTask
 from my_policy import create_policy
 from my_utils import run_episode
-from my_loss import calculate_loss_michaels_2025_nature
+import my_loss
 from my_plots import plot_handpaths, plot_kinematics, plot_activation, plot_losses
 
 print('All packages imported.')
@@ -19,8 +19,8 @@ print('motornet version: ' + mn.__version__)
 
 device = th.device("cpu")
 
-dt     = 0.01 # time step in seconds
-ep_dur = 1.30 # episode duration in seconds
+dt     = 0.010 # time step in seconds
+ep_dur = 1.600 # episode duration in seconds
 
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
@@ -41,7 +41,7 @@ sim_mode = "train"
 
 n_batches  = 2000
 batch_size =   32
-interval   =  500
+interval   =  200
 
 results = {}
 
@@ -55,28 +55,15 @@ policy, optimizer = create_policy(env, inputs, device,
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-total_losses     = []
-cartesian_losses = []
-muscle_losses    = []
-velocity_losses  = []
-activity_losses  = []
-spectral_losses  = []
-jerk_losses      = []
-losses = {'total': total_losses,
-          'cartesian': cartesian_losses,
-          'muscle': muscle_losses,
-          'velocity': velocity_losses,
-          'activity': activity_losses,
-          'spectral': spectral_losses,
-          'jerk': jerk_losses}
+loss_function = my_loss.calculate_loss_shahbazi_2025
 
 task.run_mode = 'train' # random reaches
 
 n_t = int(ep_dur / env.effector.dt) + 1 # number of time points
 
-# make directory to store figures
-if not os.path.exists("figs"):
-    os.makedirs("figs", exist_ok=True)
+# make directory to store output
+if not os.path.exists("output"):
+    os.makedirs("output", exist_ok=True)
 
 # training loop over batches
 for batch in tqdm(iterable = range(n_batches),
@@ -90,15 +77,7 @@ for batch in tqdm(iterable = range(n_batches),
     task.run_mode = 'train' # random reaches
     episode_data = run_episode(env, task, policy, batch_size, n_t, device)
     
-    loss_dict = calculate_loss_michaels_2025_nature(episode_data)
-    total_losses.append(loss_dict['total'].item())
-    cartesian_losses.append(loss_dict['cartesian'].item())
-    muscle_losses.append(loss_dict['muscle'].item())
-    velocity_losses.append(loss_dict['velocity'].item())
-    activity_losses.append(loss_dict['activity'].item())
-    spectral_losses.append(loss_dict['spectral'].item())
-    jerk_losses.append(loss_dict['jerk'].item())
-
+    loss_dict = loss_function(episode_data)
     loss_dict['total'].backward()
 
     # important to make sure gradients don't get crazy
@@ -113,13 +92,13 @@ for batch in tqdm(iterable = range(n_batches),
         episode_data = run_episode(env, task, policy, 8, n_t, device)
         # plot the test
         fig,ax = plot_handpaths(episode_data, f"{batch:04d}")
-        fig.savefig(f"figs/handpaths_{batch:04d}.png")
+        fig.savefig(f"output/handpaths_{batch:04d}.png")
         plt.close(fig)
         fig,ax = plot_kinematics(episode_data, f"{batch:04d}")
-        fig.savefig(f"figs/kinematics_{batch:04d}.png")
+        fig.savefig(f"output/kinematics_{batch:04d}.png")
         plt.close(fig)
         fig,ax = plot_activation(episode_data, f"{batch:04d}")
-        fig.savefig(f"figs/activation_{batch:04d}.png")
+        fig.savefig(f"output/activation_{batch:04d}.png")
         plt.close(fig)
 
 
@@ -129,14 +108,10 @@ episode_data = run_episode(env, task, policy, 8, n_t, device)
 
 # plot the test
 fig,ax = plot_handpaths(episode_data, "final")
-fig.savefig("figs/handpaths_final.png")
+fig.savefig("output/handpaths_final.png")
 fig,ax = plot_kinematics(episode_data, "final")
-fig.savefig("figs/kinematics_final.png")
+fig.savefig("output/kinematics_final.png")
 fig,ax = plot_activation(episode_data, "final")
-fig.savefig("figs/activation_final.png")
-
-# plot losses
-fig,ax = plot_losses(losses)
-fig.savefig("figs/losses.png")
+fig.savefig("output/activation_final.png")
 
 

@@ -6,8 +6,8 @@ class MyTask:
     def __init__(self, effector, **kwargs):
         self.effector = effector
         self.dt = self.effector.dt
-        self.tgt_delay_range = kwargs.get('tgt_delay_range', [0.1, 0.3]) # tgt delay period
-        self.go_delay_range = kwargs.get('go_delay_range', [0.3, 0.6]) # tgt delay period
+        self.tgt_delay_range = kwargs.get('tgt_delay_range', [0.1, 0.5]) # tgt delay period
+        self.go_delay_range  = kwargs.get('go_delay_range', [0.5, 0.9]) # tgt delay period
         self.run_mode = kwargs.get('run_mode', 'train') # run mode – this is useful to switch between a training mode and an experimental mode, or different versions of a task
 
     def generate(self, batch_size, n_timesteps, **kwargs):
@@ -16,7 +16,7 @@ class MyTask:
         # tile over time
         targets = np.tile(np.expand_dims(goal_states, axis=1), (1, n_timesteps, 1))
         # create empty input matrix with 2 dimensions for the x and y coordinates, and 1 for the go cue
-        inputs = np.zeros(shape=(batch_size, n_timesteps, 2 + 1))
+        inputs = np.zeros(shape=(batch_size, n_timesteps, 2 + 1)) # target x,y and go cue
 
         tgt_delay_range = self.tgt_delay_range
         go_delay_range  = self.go_delay_range
@@ -24,15 +24,15 @@ class MyTask:
         base_joint = np.deg2rad([50., 90., 0., 0.]).astype(np.float32)
 
         # Circular targets
-        rad = 0.2
+        rad = 0.10
         n = 8
         angle = np.linspace(0,2*np.pi,n, endpoint=False)
         offset = rad*np.array([np.cos(angle), np.sin(angle),np.zeros(n),np.zeros(n)])
 
         if self.run_mode == 'test_center_out': # This is example of why alternate run modes are useful. We can turn off catch trials, fix the delay period length, and put the arm at one location
             catch_chance = 0.
-            tgt_delay_range = [0.2, 0.2]
-            go_delay_range  = [0.4, 0.4]
+            tgt_delay_range = [0.3, 0.3]
+            go_delay_range  = [0.6, 0.6]
             init_states = np.repeat(np.expand_dims(base_joint, axis=0), batch_size, axis=0)
         elif self.run_mode == 'train_center_out':
             catch_chance = 0.5
@@ -62,15 +62,15 @@ class MyTask:
 
             if not is_catch:
                 inputs[i, 0:tgt_delay_time, 0:2] = start_point[0, 0:2]  # RNN sees start location until tgt_delay
-                inputs[i, tgt_delay_time:, 0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
-                inputs[i, 0:go_delay_time, 2] = 1 # RNN sees no-go until go_delay
-                inputs[i, go_delay_time:, 2] = 0  # then RNN sees go
+                inputs[i, tgt_delay_time:,  0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
+                inputs[i, 0:go_delay_time, 2] = 0 # RNN sees no-go until go_delay
+                inputs[i, go_delay_time:,  2] = 1  # then RNN sees go
                 targets[i, 0:go_delay_time, :] = start_point      # targets drive the loss function, desired xy is start_point until go_delay
-                targets[i, go_delay_time:, :] = targets[i, -1, :] # after go_delay desired xy is movement target position
+                targets[i, go_delay_time:,  :] = targets[i, -1, :] # after go_delay desired xy is movement target position
             else:
                 inputs[i, 0:tgt_delay_time, 0:2] = start_point[0, 0:2]  # RNN sees start location until tgt_delay
-                inputs[i, tgt_delay_time:, 0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
-                inputs[i, :, 2] = 1 # RNN sees no-go
+                inputs[i, tgt_delay_time:,  0:2] = targets[i, -1, 0:2]   # then RNN sees final movement target
+                inputs[i, :,  2] = 0 # RNN sees no-go
                 targets[i, :, :] = start_point # targets drive the loss function
 
             # Add noise to the inputs
