@@ -47,7 +47,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 sim_mode = "train"
 
 optimizer_mod = 'Adam' # use the Adam optimizer
-learning_rate = 3e-3   # set learning rate
+learning_rate = 1e-3   # set learning rate
 
 policy, optimizer = create_policy(env, inputs, device, 
                                   policy_func   = mn.policy.ModularPolicyGRU, 
