@@ -21,11 +21,11 @@ print('motornet version: ' + mn.__version__)
 device = th.device("cpu")
 
 
-dt         =    0.010 # time step in seconds
-ep_dur     =    3.00  # episode duration in seconds
-n_batches  = 2000
-batch_size =   64
-interval   =  100
+dt         =     0.010 # time step in seconds
+ep_dur     =     3.00  # episode duration in seconds
+n_batches  = 10000
+batch_size =    64
+interval   =   500
 output_dir = 'output'
 
 
@@ -47,7 +47,7 @@ inputs, targets, init_states = task.generate(1, n_t)
 sim_mode = "train"
 
 optimizer_mod = 'Adam' # use the Adam optimizer
-learning_rate = 1e-3   # set learning rate
+learning_rate = 3e-3   # set learning rate
 
 policy, optimizer = create_policy(env, inputs, device, 
                                   policy_func   = mn.policy.ModularPolicyGRU, 
