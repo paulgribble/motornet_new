@@ -1,4 +1,5 @@
 import os
+import pickle
 import numpy as np
 import torch as th
 import motornet as mn
@@ -19,8 +20,14 @@ print('motornet version: ' + mn.__version__)
 
 device = th.device("cpu")
 
-dt     = 0.010 # time step in seconds
-ep_dur = 3.00 # episode duration in seconds
+
+dt         =    0.010 # time step in seconds
+ep_dur     =    3.00  # episode duration in seconds
+n_batches  = 10
+batch_size =   64
+interval   =  5
+output_dir = 'output'
+
 
 mm = mn.muscle.RigidTendonHillMuscle()                    # muscle model
 ee = mn.effector.RigidTendonArm26(muscle=mm, timestep=dt) # effector model
@@ -39,12 +46,6 @@ inputs, targets, init_states = task.generate(1, n_t)
 # simulation mode is "train" (random reaches) or "test" (8 center-out reaches)
 sim_mode = "train"
 
-n_batches  =  5000
-batch_size =    64
-interval   =   100
-
-input_freeze  = 0      # don't freeze input weights
-output_freeze = 0      # don't freeze output weights
 optimizer_mod = 'Adam' # use the Adam optimizer
 learning_rate = 3e-3   # set learning rate
 
@@ -55,9 +56,19 @@ policy, optimizer = create_policy(env, inputs, device,
 
 loss_function = my_loss.calculate_loss_michaels_2025_nature
 
+total_loss     = []
+cartesian_loss = []
+muscle_loss    = []
+velocity_loss  = []
+activity_loss  = []
+spectral_loss  = []
+jerk_loss      = []
+
 # make directory to store output
-if not os.path.exists("output"):
-    os.makedirs("output", exist_ok=True)
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+
+print(f"Training: \n{n_batches} batches of \n{batch_size} simulations of \n{ep_dur} sec movements")
 
 # training loop over batches
 for batch in tqdm(iterable      = range(n_batches),
@@ -72,6 +83,14 @@ for batch in tqdm(iterable      = range(n_batches),
     
     loss_dict = loss_function(episode_data)
     loss_dict['total'].backward()
+
+    total_loss.append(     loss_dict['total'].item())
+    cartesian_loss.append( loss_dict['cartesian'].item())
+    muscle_loss.append(    loss_dict['muscle'].item())
+    velocity_loss.append(  loss_dict['velocity'].item())
+    activity_loss.append(  loss_dict['activity'].item())
+    spectral_loss.append(  loss_dict['spectral'].item())
+    jerk_loss.append(      loss_dict['jerk'].item())
 
     # important to make sure gradients don't get crazy
     th.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=1)  
@@ -89,16 +108,33 @@ for batch in tqdm(iterable      = range(n_batches),
         plot_simulations(episode_data, f"{batch:04d}", xylim=[[-.2,.1],[.3,.6]])
         plot_episode(episode_data, f"{batch:04d}")
 
+losses = {
+    'cartesian' : cartesian_loss,
+    'muscle'    : muscle_loss,
+    'velocity'  : velocity_loss,
+    'activity'  : activity_loss,
+    'spectral'  : spectral_loss,
+    'jerk'      : jerk_loss
+}
+
 # test run on center-out task
 task.run_mode = 'test_center_out'
 episode_data = run_episode(env, task, policy, 8, n_t, device)
 
 # plot the test
 fig,ax = plot_handpaths(episode_data, "final")
-fig.savefig("output/handpaths_final.png")
+fig.savefig(output_dir + "/handpaths_final.png")
 fig,ax = plot_kinematics(episode_data, "final")
-fig.savefig("output/kinematics_final.png")
+fig.savefig(output_dir + "/kinematics_final.png")
 fig,ax = plot_activation(episode_data, "final")
-fig.savefig("output/activation_final.png")
+fig.savefig(output_dir + "/activation_final.png")
 
+# Save results
+print(f"saving {output_dir}/weights.pt and {output_dir}/results.pt ...")
+th.save(policy.state_dict(), output_dir + f'/weights.pt')
+results = {
+    'episode_data': episode_data,
+    'losses'      : losses
+    }
+th.save(results, output_dir + "/results.pt")
 
