@@ -81,21 +81,13 @@ for batch in tqdm(iterable = range(n_batches),
 
     if (((batch % interval) == 0) and (batch > 0)):
         # test run on center-out task
-        task.run_mode = 'test_center_out'
-        episode_data = run_episode(env, task, policy, 8, n_t, device)
-        # plot the test
-        # fig,ax = plot_handpaths(episode_data, f"{batch:04d}")
-        # fig.savefig(f"output/handpaths_{batch:04d}.png")
-        # plt.close(fig)
-        # fig,ax = plot_kinematics(episode_data, f"{batch:04d}")
-        # fig.savefig(f"output/kinematics_{batch:04d}.png")
-        # plt.close(fig)
-        # fig,ax = plot_activation(episode_data, f"{batch:04d}")
-        # fig.savefig(f"output/activation_{batch:04d}.png")
-        # plt.close(fig)
         plot_simulations(episode_data, f"{batch:04d}")
         plot_episode(episode_data, f"{batch:04d}")
 
+        task.run_mode = 'test_center_out'
+        episode_data = run_episode(env, task, policy, 8, n_t, device)
+        plot_simulations(episode_data, f"{batch:04d}")
+        plot_episode(episode_data, f"{batch:04d}")
 
 # test run on center-out task
 task.run_mode = 'test_center_out'

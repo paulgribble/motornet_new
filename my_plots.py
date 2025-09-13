@@ -85,8 +85,8 @@ def plot_simulations(episode_data, figtext=""):
     fg.suptitle(figtext, fontsize=14)
     # trajectory in workspace
     plt.subplot(1,2,1)
-    plt.ylim([0.3, 0.6])
-    plt.xlim([-0.2, 0.1])
+    plt.ylim([-0.3, 1])
+    plt.xlim([-0.7, 0.7])
     plotor(axis=plt.gca(), cart_results=xy)
     plt.scatter(target_x, target_y)
     # deviation from target
