@@ -76,7 +76,7 @@ def plot_losses(losses, figtext=""):
 
 
 #  Plot arm trajectories and errors relative to the target
-def plot_simulations(episode_data, xylim=[], figtext=""):
+def plot_simulations(episode_data, xylim=None, figtext=""):
     xy = episode_data['xy'][:,:,0:2].detach().numpy()
     target_xy = episode_data['targets'].detach().numpy()
     target_x = target_xy[:, -1, 0]
