@@ -9,7 +9,7 @@ def create_policy(env, inputs, device, policy_func, optimizer_mod, learning_rate
     connectivity_mask = np.array([[1]])
     connectivity_mask[connectivity_mask > 1] = 1
     connectivity_delay = np.zeros_like(connectivity_mask)
-    module_sizes = [256]
+    module_sizes = [128]
     spectral_scaling = 1
     # input sparsity
     vision_dim = np.arange(env.get_vision().shape[1])
@@ -21,7 +21,7 @@ def create_policy(env, inputs, device, policy_func, optimizer_mod, learning_rate
                               connectivity_mask=connectivity_mask, output_mask=output_mask,
                               connectivity_delay=connectivity_delay,
                               proportion_excitatory=None, input_gain=1.,
-                              spectral_scaling=spectral_scaling, device=device, activation='tanh', output_delay=1)
+                              spectral_scaling=spectral_scaling, device=device, activation='rect_tanh', output_delay=1)
     # Initialize the optimizer
     if optimizer_mod == 'Adam':
         optimizer = th.optim.Adam(policy.parameters(), lr= learning_rate)

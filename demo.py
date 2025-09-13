@@ -22,10 +22,10 @@ device = th.device("cpu")
 
 
 dt         =     0.010 # time step in seconds
-ep_dur     =     3.00  # episode duration in seconds
-n_batches  = 10000
+ep_dur     =     1.00  # episode duration in seconds
+n_batches  =  2000
 batch_size =    64
-interval   =   500
+interval   =   200
 output_dir = 'output'
 
 
@@ -54,7 +54,7 @@ policy, optimizer = create_policy(env, inputs, device,
                                   optimizer_mod = optimizer_mod, 
                                   learning_rate = learning_rate)
 
-loss_function = my_loss.calculate_loss_michaels_2025_nature
+loss_function = my_loss.calculate_loss_mirzazadeh
 
 total_loss     = []
 cartesian_loss = []
